@@ -21,7 +21,15 @@ This plugin gets images from your flickr account and displays them in an array s
 
 = How do I use this Plugin? =
 
-FancyFlickr uses the `[fancyflickr]` shortcode to display the FancyFlickr gallery in any post. The full options are `[fancyflickr set="SETID" num="NUMBEROFPICS"]`. Neither of these are required. Without any of the options set it will get the newest gallery with all of the pictures, but be careful because if you don't set a `setid` the newest set will be displayed in that post when you create a new one. The highest value that will be accepted by `num` is 500 because that's the most pictures that the Flickr API will return.
+FancyFlickr uses the `[fancyflickr]` shortcode to display the FancyFlickr gallery in any post. The full options are `[fancyflickr set="SETID" num="NUMBEROFPICS"]`. Neither of these are required. Without any of the options set it will get the newest gallery with all of the pictures.
+
+= When I created a new set, the pictures on my post changed. Why? =
+
+Right now, the plugin isn't smart enough to know which set is the newest at the time you wrote the post. I'm working on a way to solve this that will be available in the next version.
+
+= Is there a way to choose which pictures inside a set are displayed? =
+
+Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your set on flickr. I know. It's annoying. I'm working on better ways to do this.
 
 == Changelog ==
 
