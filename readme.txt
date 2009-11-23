@@ -31,6 +31,12 @@ Right now, the plugin isn't smart enough to know which set is the newest at the 
 
 Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your set on flickr. I know. It's annoying. I'm working on better ways to do this.
 
+== Screenshots ==
+
+1. A FancyFlickr gallery
+2. The prettyPhoto lightbox
+3. The FancyFlickr options page
+
 == Changelog ==
 
 = 0.1 =
