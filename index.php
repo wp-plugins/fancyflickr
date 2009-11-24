@@ -14,6 +14,7 @@ if ( is_admin() ){
   add_action('admin_menu', 'fancyflickr_menu');
   add_action( 'admin_init', 'register_fancyflickr_settings' );
 } else {
+	// load jQuery from google
 	wp_deregister_script('jquery'); 
 	wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"), false, '1.3.2'); 
 	wp_enqueue_script('jquery');
@@ -35,10 +36,13 @@ if ( is_admin() ){
 	
 	// prettyPhoto "make it work" script
 	add_action('wp_footer', 'fancyflickr_pp_miw');
+	
+	// setup [fancyflickr]
+	add_shortcode('fancyflickr', 'fancyflickr');
 }
-add_shortcode('fancyflickr', 'fancyflickr');
 
-// [fancyflickr foo="foo-value"]
+
+// [fancyflickr set="SETID" num="NUMOFPICS"]
 function fancyflickr($atts) {
 	extract(shortcode_atts(array(
 		'set' => def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')),
