@@ -43,7 +43,7 @@ if ( is_admin() ){
 
 
 // [fancyflickr set="SETID" num="NUMOFPICS"]
-function fancyflickr($atts) {
+function fancyflickr($atts = array()) {
 	extract(shortcode_atts(array(
 		'set' => def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')),
 		'num' => '500',
