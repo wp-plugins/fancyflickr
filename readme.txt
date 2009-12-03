@@ -11,6 +11,8 @@ Adds a nice looking gallery from flickr styled with a little CSS3 and jQuery, wh
 
 This plugin gets images from your flickr account and displays them in an array styled with a little CSS3 and jQuery, which degrades nicely in older browsers. Also opens photos in the prettyPhoto lightbox.
 
+Go to http://joshbetz.com/2009/12/fancyflickr-authentication/ to vote on whether or not you want FancyFlickr to support authentication.
+
 == Installation ==
 
 1. Upload `fancyflickr` to the `/wp-content/plugins/` directory
