@@ -41,5 +41,8 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 
 == Changelog ==
 
+= 0.2 =
+* RGBA drop shadows to work on any background.
+
 = 0.1 =
 * First version. Adds a fancyflickr gallery with the use of the `[fancyflickr]` shortcode.

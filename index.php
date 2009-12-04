@@ -75,9 +75,9 @@ function fancyflickr_css() { ?>
 	<style type='text/css'>
 	.fancyflickr { margin: 1em auto; display: block; max-width: 720px; }
 	.column { float: left; margin-right: 10px; padding: 0; }
-	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; padding: 10px; margin:5px; -moz-box-shadow: #ccc 5px 5px 20px; -webkit-box-shadow: #ccc 5px 5px 20px; margin-bottom:1em; }
+	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; padding: 10px; margin:5px; -moz-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; margin-bottom:1em; }
 	a.polaroid img { width: 200px; opacity:0.85; filter:alpha(opacity=85); }
-	a.polaroid:hover { -moz-box-shadow: #666 5px 5px 20px; -webkit-box-shadow: #666 5px 5px 20px; }
+	a.polaroid:hover { -moz-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; }
 	a.polaroid:hover img {opacity:1.0; filter:alpha(opacity=100);}
 	</style>
 <?php 
