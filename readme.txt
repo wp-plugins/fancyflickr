@@ -43,6 +43,9 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 
 = 0.2 =
 * RGBA drop shadows to work on any background.
+* New option: size. Valid Paremters are `s` for a small square, `t` for a thumbnail, `m` for the standard size. Default value: m.
+* New option: columns. Sets the number of columns displayed by the plugin. Default value: 3.
+* New function: `fancyflickr(array('set' => 'setID', 'num' => 500, 'width' => 'm', 'columns' => '3'))`. Gets the photos in the same way as the shortcode. Set the parameters with an array. Default values: set = your lastest set, num = 500, width = m, columns = 3.
 
 = 0.1 =
 * First version. Adds a fancyflickr gallery with the use of the `[fancyflickr]` shortcode.
