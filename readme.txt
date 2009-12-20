@@ -41,6 +41,9 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 
 == Changelog ==
 
+= 0.2.1 =
+* Fixes an issue where Flickr wouldn't send the URL to the large image.
+
 = 0.2 =
 * RGBA drop shadows to work on any background.
 * New option: size. Valid Paremters are `s` for a small square, `t` for a thumbnail, `m` for the standard size. Default value: m.
