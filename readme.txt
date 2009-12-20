@@ -2,7 +2,7 @@
 Contributors: betzster
 Tags: photos, flickr
 Requires at least: 2.8
-Tested up to: 2.8.6
+Tested up to: 2.9
 Stable tag: trunk
 
 Adds a nice looking gallery from flickr styled with a little CSS3 and jQuery, which degrades nicely in older browsers.
