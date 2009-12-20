@@ -87,7 +87,9 @@ function get_image_set($key, $userid, $set, $num, $size) {
 	}
 	$photos = $pics['photos'];
 	foreach($photos as $photo) {
-		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $photo['o_url'] . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$size"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
+		if($photo['o_url'] == '') $bigpic = $photo['b_url'];
+		else $bigpic = $photo['o_url'];
+		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$size"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
 	}
 	return $pic;
 }
@@ -126,6 +128,10 @@ function register_fancyflickr_settings() {
 
 function fancyflickr_menu() {
   add_options_page('Fancy Flickr Options', 'Fancy Flickr', 'administrator', 'fancyflickr-options-page', 'fancyflickr_options');
+}
+
+//default options
+function fancyflickr_activate() {
 }
 
 function fancyflickr_options() { ?>
