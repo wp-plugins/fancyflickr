@@ -41,6 +41,9 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 
 == Changelog ==
 
+= 0.2.2 =
+* Update `class.flickr.php` to reflect the previous change. Now the largest possible image is pulled.
+
 = 0.2.1 =
 * Fixes an issue where Flickr wouldn't send the URL to the large image.
 

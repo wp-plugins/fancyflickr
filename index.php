@@ -3,7 +3,7 @@
 Plugin Name: FancyFlickr
 Plugin URI: http://joshbetz.com/2009/11/fancyflickr/
 Description: 
-Version: 0.2.1
+Version: 0.2.2
 Author: Josh Betz
 Author URI: http://joshbetz.com
 */
