@@ -3,7 +3,7 @@
 Plugin Name: FancyFlickr
 Plugin URI: http://joshbetz.com/2009/11/fancyflickr/
 Description: 
-Version: 0.1
+Version: 0.2.2
 Author: Josh Betz
 Author URI: http://joshbetz.com
 */
@@ -14,6 +14,7 @@ if ( is_admin() ){
   add_action('admin_menu', 'fancyflickr_menu');
   add_action( 'admin_init', 'register_fancyflickr_settings' );
 } else {
+	// load jQuery from google
 	wp_deregister_script('jquery'); 
 	wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"), false, '1.3.2'); 
 	wp_enqueue_script('jquery');
@@ -35,27 +36,60 @@ if ( is_admin() ){
 	
 	// prettyPhoto "make it work" script
 	add_action('wp_footer', 'fancyflickr_pp_miw');
+	
+	// setup [fancyflickr]
+	add_shortcode('fancyflickr', 'fancyflickr');
 }
-add_shortcode('fancyflickr', 'fancyflickr');
 
-// [fancyflickr foo="foo-value"]
-function fancyflickr($atts) {
+
+// [fancyflickr set="SETID" num="NUMOFPICS"]
+function fancyflickr($atts = array()) {
 	extract(shortcode_atts(array(
-		'set' => def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')),
-		'num' => '500',
+		'set' 	=> def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')),
+		'num' 	=> '500',
+		'size'	=> 'm',
+		'columns'	=> '3',
 	), $atts));
 	
-	$photos = get_image_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $set, $num);
+	switch($size) {
+		case 's':
+			$width = $columns * 78;
+		break;
+		case 't':
+			$width = $columns * 110;
+		break;
+		case 'm':
+		default:
+			$width = $columns * 240;
+		break;
+	}
 	
-	return "<div class='fancyflickr'>" . $photos . "<br clear='all' /></div>";
+	$photos = get_image_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $set, $num, $size);
+	
+	return "<div style='max-width:" . $width . "px;' class='fancyflickr'>" . $photos . "<br clear='all' /></div>";
 }
 
-function get_image_set($key, $userid, $set, $num) {
+function get_image_set($key, $userid, $set, $num, $size) {
 	$flickr = new flickr($key);
 	$pics = $flickr->getPhotosetPhotos($userid, $set, $num);
+	switch($size) {
+	case 's':
+		$style = 'width:50px; padding: 4px 4px 3px 4px;';
+	break;
+	case 't':
+		$style = 'width:80px; padding: 5px 5px 4px 5px;';
+	break;
+	case 'm':
+	default:
+		$style = 'width:200px; padding: 10px 10px 8px 10px;';
+		$size = 'm';
+	break;
+	}
 	$photos = $pics['photos'];
 	foreach($photos as $photo) {
-		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $photo['o_url'] . '" rel="prettyPhoto[gallery]"><img src="' . $photo['m_url'] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
+		if($photo['o_url'] == '') $bigpic = $photo['b_url'];
+		else $bigpic = $photo['o_url'];
+		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$size"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
 	}
 	return $pic;
 }
@@ -69,11 +103,11 @@ function def_set($key, $userid) {
 
 function fancyflickr_css() { ?>
 	<style type='text/css'>
-	.fancyflickr { margin: 1em auto; display: block; max-width: 720px; }
+	.fancyflickr { margin: 1em auto; display: block; }
 	.column { float: left; margin-right: 10px; padding: 0; }
-	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; padding: 10px; margin:5px; -moz-box-shadow: #ccc 5px 5px 20px; -webkit-box-shadow: #ccc 5px 5px 20px; margin-bottom:1em; }
-	a.polaroid img { width: 200px; opacity:0.85; filter:alpha(opacity=85); }
-	a.polaroid:hover { -moz-box-shadow: #666 5px 5px 20px; -webkit-box-shadow: #666 5px 5px 20px; }
+	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; margin:5px; -moz-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; margin-bottom:1em; }
+	a.polaroid img { opacity:0.85; filter:alpha(opacity=85); }
+	a.polaroid:hover { -moz-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; }
 	a.polaroid:hover img {opacity:1.0; filter:alpha(opacity=100);}
 	</style>
 <?php 
@@ -94,6 +128,10 @@ function register_fancyflickr_settings() {
 
 function fancyflickr_menu() {
   add_options_page('Fancy Flickr Options', 'Fancy Flickr', 'administrator', 'fancyflickr-options-page', 'fancyflickr_options');
+}
+
+//default options
+function fancyflickr_activate() {
 }
 
 function fancyflickr_options() { ?>
