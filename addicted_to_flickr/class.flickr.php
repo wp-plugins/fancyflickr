@@ -365,11 +365,11 @@ class flickr {
 						$photo_id 	= $a['attributes']['ID'];
 						$secret 	= $a['attributes']['SECRET'];
 						
-						$ret_array['photos'][$a['attributes']['ID']]['url'] = $a['attributes']['URL_M'];
-						$ret_array['photos'][$a['attributes']['ID']]['s_url'] = $a['attributes']['URL_SQ'];
-						$ret_array['photos'][$a['attributes']['ID']]['t_url'] = $a['attributes']['URL_T'];
-						$ret_array['photos'][$a['attributes']['ID']]['m_url'] = $a['attributes']['URL_S'];
-						$ret_array['photos'][$a['attributes']['ID']]['b_url'] = $a['attributes']['URL_M'];
+						$ret_array['photos'][$a['attributes']['ID']]['url'] = $this->_replaceURL($server, $id, $secret);
+						$ret_array['photos'][$a['attributes']['ID']]['s_url'] = $this->_replaceURL($server, $id, $secret, 's');
+						$ret_array['photos'][$a['attributes']['ID']]['t_url'] = $this->_replaceURL($server, $id, $secret, 't');
+						$ret_array['photos'][$a['attributes']['ID']]['m_url'] = $this->_replaceURL($server, $id, $secret, 'm');
+						$ret_array['photos'][$a['attributes']['ID']]['b_url'] = $this->_replaceURL($server, $id, $secret, 'b');
 						$ret_array['photos'][$a['attributes']['ID']]['o_url'] = $a['attributes']['URL_O'];
 					}
 					break;
@@ -550,11 +550,11 @@ class flickr {
 						$photo_id 	= $a['attributes']['ID'];
 						$secret 	= $a['attributes']['SECRET'];
 						
-						$ret_array['photos'][$a['attributes']['ID']]['url'] = $a['attributes']['URL_M'];
-						$ret_array['photos'][$a['attributes']['ID']]['s_url'] = $a['attributes']['URL_SQ'];
-						$ret_array['photos'][$a['attributes']['ID']]['t_url'] = $a['attributes']['URL_T'];
-						$ret_array['photos'][$a['attributes']['ID']]['m_url'] = $a['attributes']['URL_S'];
-						$ret_array['photos'][$a['attributes']['ID']]['b_url'] = $a['attributes']['URL_M'];
+						$ret_array['photos'][$a['attributes']['ID']]['url'] = $this->_replaceURL($server, $id, $secret);
+						$ret_array['photos'][$a['attributes']['ID']]['s_url'] = $this->_replaceURL($server, $id, $secret, 's');
+						$ret_array['photos'][$a['attributes']['ID']]['t_url'] = $this->_replaceURL($server, $id, $secret, 't');
+						$ret_array['photos'][$a['attributes']['ID']]['m_url'] = $this->_replaceURL($server, $id, $secret, 'm');
+						$ret_array['photos'][$a['attributes']['ID']]['b_url'] = $this->_replaceURL($server, $id, $secret, 'b');
 						$ret_array['photos'][$a['attributes']['ID']]['o_url'] = $a['attributes']['URL_O'];
 						
 					}
@@ -787,7 +787,7 @@ class flickr {
 						$secret = $a['attributes']['SECRET'];
 						$server = $a['attributes']['SERVER'];
 						
-						$ret_array['urls']['url'] 		= $this->_replaceURL($server, $id, $secret);
+						$ret_array['urls']['url'] 			= $this->_replaceURL($server, $id, $secret);
 						$ret_array['urls']['s_url'] 		= $this->_replaceURL($server, $id, $secret, 's');
 						$ret_array['urls']['t_url'] 		= $this->_replaceURL($server, $id, $secret, 't');
 						$ret_array['urls']['m_url'] 		= $this->_replaceURL($server, $id, $secret, 'm');
@@ -978,11 +978,11 @@ class flickr {
 						
 						$ret_array['photos'][$photo_count]['photo_page'] 	= "{$this->_flickr_url}/photos/{$user_id}/{$id}/";
 						
-						$ret_array['photos'][$photo_count]['url'] 			= $a['attributes']['URL_M'];
-						$ret_array['photos'][$photo_count]['s_url'] 		= $a['attributes']['URL_SQ'];
-						$ret_array['photos'][$photo_count]['t_url'] 		= $a['attributes']['URL_T'];
-						$ret_array['photos'][$photo_count]['m_url'] 		= $a['attributes']['URL_S'];
-						$ret_array['photos'][$photo_count]['b_url'] 		= $a['attributes']['URL_M'];
+						$ret_array['photos'][$photo_count]['url'] 			= $this->_replaceURL($server, $id, $secret);
+						$ret_array['photos'][$photo_count]['s_url'] 		= $this->_replaceURL($server, $id, $secret, 's');
+						$ret_array['photos'][$photo_count]['t_url'] 		= $this->_replaceURL($server, $id, $secret, 't');
+						$ret_array['photos'][$photo_count]['m_url'] 		= $this->_replaceURL($server, $id, $secret, 'm');
+						$ret_array['photos'][$photo_count]['b_url'] 		= $this->_replaceURL($server, $id, $secret, 'b');
 						$ret_array['photos'][$photo_count]['o_url'] 		= $a['attributes']['URL_O'];
 						$photo_count++;
 					}
@@ -1340,11 +1340,11 @@ class flickr {
 						$ret_array['photos'][$id]['server'] 	= $server;
 						$ret_array['photos'][$id]['title'] 		= $a['attributes']['TITLE'];
 						$ret_array['photos'][$id]['isprimary'] 	= $a['attributes']['ISPRIMARY'];
-						$ret_array['photos'][$id]['url'] 		= $a['attributes']['URL_M'];
-						$ret_array['photos'][$id]['s_url'] 		= $a['attributes']['URL_SQ'];
-						$ret_array['photos'][$id]['t_url'] 		= $a['attributes']['URL_T'];
-						$ret_array['photos'][$id]['m_url'] 		= $a['attributes']['URL_S'];
-						$ret_array['photos'][$id]['b_url'] 		= $a['attributes']['URL_M'];
+						$ret_array['photos'][$id]['url'] 		= $this->_replaceURL($server, $id, $secret);
+						$ret_array['photos'][$id]['s_url'] 		= $this->_replaceURL($server, $id, $secret, 's');
+						$ret_array['photos'][$id]['t_url'] 		= $this->_replaceURL($server, $id, $secret, 't');
+						$ret_array['photos'][$id]['m_url'] 		= $this->_replaceURL($server, $id, $secret, 'm');
+						$ret_array['photos'][$id]['b_url'] 		= $this->_replaceURL($server, $id, $secret, 'b');
 						$ret_array['photos'][$id]['o_url'] 		= $a['attributes']['URL_O'];
 						$ret_array['photos'][$id]['photo_page']	= "{$this->_flickr_url}/photos/{$user_id}/{$id}/in/set-{$photoset_id}/";
 						
@@ -1431,6 +1431,44 @@ class flickr {
 	/***************************************************************************************************************
 											******* UTILITY FUNCTIONS ********
 	****************************************************************************************************************/
+	
+	function flickr_rand($userid, $num = 6) {
+		$photos = $this->flickr_rand_array($this->_api_key, $userid);
+		$numphotos = count($photos) - 1;
+
+		$pics = array();
+		for ($i = 1; $i <= $num; $i++) {
+			$number = rand(0, $numphotos);
+			$pics[$photos[$number]['id']] = $photos[$number];
+		}
+		return $pics;
+	}
+
+	function flickr_rand_array($key, $userid) {
+		$flickr = new flickr($key);
+		$pics = $flickr->getUsersPublicPhotos($userid, 1, 500);
+
+		$ids = array();
+		$i = 0;
+
+		foreach($pics['photos'] as $pic) {
+			$ids[$i]['id']			= $pic['id'];
+			$id						= $pic['id'];
+			$secret					= $pic['secret'];
+			$server					= $pic['server'];
+			$ids[$i]['title']		= $pic['title'];
+			$ids[$i]['url'] 		= $this->_replaceURL($server, $id, $secret);
+			$ids[$i]['s_url'] 		= $this->_replaceURL($server, $id, $secret, 's');
+			$ids[$i]['t_url'] 		= $this->_replaceURL($server, $id, $secret, 't');
+			$ids[$i]['m_url'] 		= $this->_replaceURL($server, $id, $secret, 'm');
+			$ids[$i]['b_url'] 		= $this->_replaceURL($server, $id, $secret, 'b');
+			$ids[$i]['o_url'] 		= $pic['o_url'];
+			$i++;
+		}
+
+		return $ids;
+	}
+	
 	
 	/**
 	* Checks an array that used to be xml for an error, if so it sets the error code and message
