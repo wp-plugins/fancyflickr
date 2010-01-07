@@ -3,7 +3,7 @@
 Plugin Name: FancyFlickr
 Plugin URI: http://joshbetz.com/2009/11/fancyflickr/
 Description: 
-Version: 0.2.2
+Version: 0.3
 Author: Josh Betz
 Author URI: http://joshbetz.com
 */
@@ -44,14 +44,25 @@ if ( is_admin() ){
 
 // [fancyflickr set="SETID" num="NUMOFPICS"]
 function fancyflickr($atts = array()) {
-	extract(shortcode_atts(array(
-		'set' 	=> def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')),
-		'num' 	=> '500',
-		'size'	=> 'm',
-		'columns'	=> '3',
-	), $atts));
+	global $post;
 	
-	switch($size) {
+	if(in_the_loop()) {
+		add_post_meta($post->ID, '_fancyflickr_recent', def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')), true);
+		$defset = get_post_meta($post->ID, '_fancyflickr_recent', true);
+	} else {
+		$defset = def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'));
+	}
+	
+	extract(shortcode_atts(array(
+		'type'	=> 'set',
+		'set' 	=> $defset,
+		'num' 	=> get_option('fancyflickr_num'),
+		'smallimage'	=> get_option('fancyflickr_smallimage'),
+		'bigimage' => get_option('fancyflickr_bigimage'),
+		'columns'	=> intval(get_option('fancyflickr_columns')),
+	), $atts));
+		
+	switch($smallimage) {
 		case 's':
 			$width = $columns * 78;
 		break;
@@ -64,34 +75,69 @@ function fancyflickr($atts = array()) {
 		break;
 	}
 	
-	$photos = get_image_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $set, $num, $size);
+	switch($type) {
+		case 'set':
+		$photos = get_image_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $set, $num, $smallimage, $bigimage, $columns);
+		break;
+		case 'random':
+		$photos = get_random_images(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $num, $smallimage, $bigimage, $columns);
+		break;
+	}
 	
 	return "<div style='max-width:" . $width . "px;' class='fancyflickr'>" . $photos . "<br clear='all' /></div>";
 }
 
-function get_image_set($key, $userid, $set, $num, $size) {
+// get Photoset
+function get_image_set($key, $userid, $set, $num, $smallimage, $bigimage, $columns) {
 	$flickr = new flickr($key);
 	$pics = $flickr->getPhotosetPhotos($userid, $set, $num);
-	switch($size) {
-	case 's':
-		$style = 'width:50px; padding: 4px 4px 3px 4px;';
-	break;
-	case 't':
-		$style = 'width:80px; padding: 5px 5px 4px 5px;';
-	break;
-	case 'm':
-	default:
-		$style = 'width:200px; padding: 10px 10px 8px 10px;';
-		$size = 'm';
-	break;
+	$pic = ff_layout($pics['photos'], $smallimage, $bigimage, $columns);
+	return $pic;
+}
+
+// get Random Images
+function get_random_images($key, $userid, $num, $smallimage, $bigimage, $columns) {
+	$flickr = new flickr($key);
+	$pics = $flickr->flickr_rand($userid, $columns);
+	$pic = ff_layout($pics, $smallimage, $bigimage, $columns);
+	return $pic;
+}
+
+function ff_layout($photos, $smallimage, $bigimage, $columns) {
+	switch($smallimage) {
+		case 's':
+			$style = 'width:50px; padding: 4px;';
+		break;
+		case 't':
+			$style = 'width:80px; padding: 5px;';
+		break;
+		case 'm':
+		default:
+			$style = 'width:200px; padding: 10px;';
+			$smallimage = 'm';
+		break;
 	}
-	$photos = $pics['photos'];
+	$i = 0;
 	foreach($photos as $photo) {
-		if($photo['o_url'] == '') $bigpic = $photo['b_url'];
-		else $bigpic = $photo['o_url'];
-		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$size"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
+	
+	if($bigimage == 'o' && $photo['o_url'] != '') {
+		$bigpic = $photo['o_url'];
+	} elseif($bigimage == 'o' && $photo['o_url'] == '' && $photo['b_url'] != '') {
+		$bigpic = $photo['b_url'];
+	} elseif($bigimage == 'b' && $photo['b_url'] != '') {
+		$bigpic = $photo['b_url'];
+	} else {
+		$bigpic = $photo['m_url'];
+	}
+		
+		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$smallimage"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
+		
+		$i++;
+		if(is_int($i/$columns)) $pic .= "<br clear='left' />\r\n";
+		
 	}
 	return $pic;
+	
 }
 
 function def_set($key, $userid) {
@@ -105,7 +151,7 @@ function fancyflickr_css() { ?>
 	<style type='text/css'>
 	.fancyflickr { margin: 1em auto; display: block; }
 	.column { float: left; margin-right: 10px; padding: 0; }
-	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; margin:5px; -moz-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; margin-bottom:1em; }
+	a.polaroid { -moz-transition: all 0.2s ease-in-out; -webkit-transition: all 0.2s ease-in-out; display: block; background: #fff; margin:5px; -moz-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.25) 5px 5px 20px; margin-bottom:1em; overflow: hidden; }
 	a.polaroid img { opacity:0.85; filter:alpha(opacity=85); }
 	a.polaroid:hover { -moz-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; -webkit-box-shadow: rgba(0,0,0,.5) 5px 5px 20px; }
 	a.polaroid:hover img {opacity:1.0; filter:alpha(opacity=100);}
@@ -115,7 +161,7 @@ function fancyflickr_css() { ?>
 
 function fancyflickr_pp_miw() { ?>
 	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function(){
+		$(function(){
 			$("a[rel^='prettyPhoto']").prettyPhoto();
 		});
 	</script>
@@ -124,6 +170,11 @@ function fancyflickr_pp_miw() { ?>
 function register_fancyflickr_settings() {
 	register_setting( 'fancyflickr-group', 'fancyflickr_api' );
 	register_setting( 'fancyflickr-group', 'fancyflickr_id' );
+	register_setting( 'fancyflickr-group', 'fancyflickr_columns', 'intval' );
+	register_setting( 'fancyflickr-group', 'fancyflickr_type' );
+	register_setting( 'fancyflickr-group', 'fancyflickr_smallimage' );
+	register_setting( 'fancyflickr-group', 'fancyflickr_bigimage' );
+	register_setting( 'fancyflickr-group', 'fancyflickr_num', 'intval' );
 }
 
 function fancyflickr_menu() {
@@ -132,6 +183,11 @@ function fancyflickr_menu() {
 
 //default options
 function fancyflickr_activate() {
+	add_option('fancyflickr_columns', '3'); // default value for number of columns
+	add_option('fancyflickr_type', 'set'); // default value for default type
+	add_option('fancyflickr_smallimage', 'm'); // defeault value for small image size
+	add_option('fancyflickr_bigimage', 'o'); // default value for big image size
+	add_option('fancyflickr_num', '500'); // default value for big image size
 }
 
 function fancyflickr_options() { ?>
@@ -152,6 +208,36 @@ function fancyflickr_options() { ?>
 		<tr valign="top">
 		<th scope="row">User ID</th>
 		<td><input type="text" name="fancyflickr_id" value="<?php echo get_option('fancyflickr_id'); ?>" /></td>
+		</tr>
+
+		<tr valign="top">
+		<th scope="row">Default Number of Photos (max. 500)</th>
+		<td><input type="text" name="fancyflickr_num" value="<?php echo get_option('fancyflickr_num'); ?>" /></td>
+		</tr>
+		
+		<tr valign="top">
+		<th scope="row">Default Columns</th>
+		<td><input type="text" name="fancyflickr_columns" value="<?php echo get_option('fancyflickr_columns'); ?>" /></td>
+		</tr>
+		
+		<tr valign="top">
+		<th scope="row">Default Type</th>
+		<td><input type="radio" name="fancyflickr_type" value="set" <?php if('set' == get_option('fancyflickr_type')) echo "checked"; ?>> Set
+		<input type="radio" name="fancyflickr_type" value="random" <?php if('random' == get_option('fancyflickr_type')) echo "checked"; ?>> Random</td>
+		</tr>
+		
+		<tr valign="top">
+		<th scope="row">Default Small Image Size</th>
+		<td><input type="radio" name="fancyflickr_smallimage" value="s" <?php if('s' == get_option('fancyflickr_smallimage')) echo "checked"; ?>> Small Square
+		<input type="radio" name="fancyflickr_smallimage" value="t" <?php if('t' == get_option('fancyflickr_smallimage')) echo "checked"; ?>> Thumbnail
+		<input type="radio" name="fancyflickr_smallimage" value="m" <?php if('m' == get_option('fancyflickr_smallimage')) echo "checked"; ?>> Medium</td>
+		</tr>
+		
+		<tr valign="top">
+		<th scope="row">Default Large Image Size</th>
+		<td><input type="radio" name="fancyflickr_bigimage" value="m" <?php if('m' == get_option('fancyflickr_bigimage')) echo "checked"; ?>> Medium
+		<input type="radio" name="fancyflickr_bigimage" value="b" <?php if('b' == get_option('fancyflickr_bigimage')) echo "checked"; ?>> Large
+		<input type="radio" name="fancyflickr_bigimage" value="o" <?php if('o' == get_option('fancyflickr_bigimage')) echo "checked"; ?>> Original</td>
 		</tr>
 		
 	</table>

@@ -1432,6 +1432,44 @@ class flickr {
 											******* UTILITY FUNCTIONS ********
 	****************************************************************************************************************/
 	
+	function flickr_rand($userid, $num = 6) {
+		$photos = $this->flickr_rand_array($this->_api_key, $userid);
+		$numphotos = count($photos) - 1;
+
+		$pics = array();
+		for ($i = 1; $i <= $num; $i++) {
+			$number = rand(0, $numphotos);
+			$pics[$photos[$number]['id']] = $photos[$number];
+		}
+		return $pics;
+	}
+
+	function flickr_rand_array($key, $userid) {
+		$flickr = new flickr($key);
+		$pics = $flickr->getUsersPublicPhotos($userid, 1, 500);
+
+		$ids = array();
+		$i = 0;
+
+		foreach($pics['photos'] as $pic) {
+			$ids[$i]['id']			= $pic['id'];
+			$id						= $pic['id'];
+			$secret					= $pic['secret'];
+			$server					= $pic['server'];
+			$ids[$i]['title']		= $pic['title'];
+			$ids[$i]['url'] 		= $this->_replaceURL($server, $id, $secret);
+			$ids[$i]['s_url'] 		= $this->_replaceURL($server, $id, $secret, 's');
+			$ids[$i]['t_url'] 		= $this->_replaceURL($server, $id, $secret, 't');
+			$ids[$i]['m_url'] 		= $this->_replaceURL($server, $id, $secret, 'm');
+			$ids[$i]['b_url'] 		= $this->_replaceURL($server, $id, $secret, 'b');
+			$ids[$i]['o_url'] 		= $pic['o_url'];
+			$i++;
+		}
+
+		return $ids;
+	}
+	
+	
 	/**
 	* Checks an array that used to be xml for an error, if so it sets the error code and message
 	*
