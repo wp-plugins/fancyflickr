@@ -39,6 +39,11 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 
 == Changelog ==
 
+= 0.3.1 =
+* Optimize exchange of options throughout the plugin
+* Add new classes for thumbnails to differentiate portrait, landscape, and square images
+* Fix bug that causes multiple sets to be included in the same prettyPhoto gallery
+
 = 0.3 =
 * Update `class.flickr.php` to enable random images
 * Add custom field for current set on publish with shortcode the set doesn't have to be defined

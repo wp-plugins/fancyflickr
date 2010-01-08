@@ -3,7 +3,7 @@
 Plugin Name: FancyFlickr
 Plugin URI: http://joshbetz.com/2009/11/fancyflickr/
 Description: 
-Version: 0.3
+Version: 0.3.1
 Author: Josh Betz
 Author URI: http://joshbetz.com
 */
@@ -46,11 +46,16 @@ if ( is_admin() ){
 function fancyflickr($atts = array()) {
 	global $post;
 	
+	$info = array (
+		'api'			=>	get_option('fancyflickr_api'),
+		'id'			=>	get_option('fancyflickr_id'),
+	);
+	
 	if(in_the_loop()) {
-		add_post_meta($post->ID, '_fancyflickr_recent', def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id')), true);
+		add_post_meta($post->ID, '_fancyflickr_recent', ff_def_set($info), true);
 		$defset = get_post_meta($post->ID, '_fancyflickr_recent', true);
 	} else {
-		$defset = def_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'));
+		$defset = ff_def_set($info);
 	}
 	
 	extract(shortcode_atts(array(
@@ -61,6 +66,15 @@ function fancyflickr($atts = array()) {
 		'bigimage' => get_option('fancyflickr_bigimage'),
 		'columns'	=> intval(get_option('fancyflickr_columns')),
 	), $atts));
+	
+	$options = array (
+		'set'			=>	$set,
+		'num'			=>	$num,
+		'smallimage' 	=>	$smallimage,
+		'bigimage'		=>	$bigimage,
+		'columns'		=>	$columns,
+		'type'			=>	$type
+	);
 		
 	switch($smallimage) {
 		case 's':
@@ -77,10 +91,10 @@ function fancyflickr($atts = array()) {
 	
 	switch($type) {
 		case 'set':
-		$photos = get_image_set(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $set, $num, $smallimage, $bigimage, $columns);
+		$photos = ff_get_image_set($info, $options);
 		break;
 		case 'random':
-		$photos = get_random_images(get_option('fancyflickr_api'), get_option('fancyflickr_id'), $num, $smallimage, $bigimage, $columns);
+		$photos = ff_get_random_images($info, $options);
 		break;
 	}
 	
@@ -88,23 +102,24 @@ function fancyflickr($atts = array()) {
 }
 
 // get Photoset
-function get_image_set($key, $userid, $set, $num, $smallimage, $bigimage, $columns) {
-	$flickr = new flickr($key);
-	$pics = $flickr->getPhotosetPhotos($userid, $set, $num);
-	$pic = ff_layout($pics['photos'], $smallimage, $bigimage, $columns);
+function ff_get_image_set($info, $options) {
+	$flickr = new flickr($info['api']);
+	$pics = $flickr->getPhotosetPhotos($info['id'], $options['set'], $options['num']);
+	$pic = ff_layout($pics['photos'], $options);
 	return $pic;
 }
 
 // get Random Images
-function get_random_images($key, $userid, $num, $smallimage, $bigimage, $columns) {
-	$flickr = new flickr($key);
-	$pics = $flickr->flickr_rand($userid, $columns);
-	$pic = ff_layout($pics, $smallimage, $bigimage, $columns);
+function ff_get_random_images($info, $options) {
+	$flickr = new flickr($info['api']);
+	$pics = $flickr->flickr_rand($info['id'], $options['columns']);
+	$pic = ff_layout($pics, $options);
 	return $pic;
 }
 
-function ff_layout($photos, $smallimage, $bigimage, $columns) {
-	switch($smallimage) {
+function ff_layout($photos, $options) {
+	
+	switch($options['smallimage']) {
 		case 's':
 			$style = 'width:50px; padding: 4px;';
 		break;
@@ -114,11 +129,29 @@ function ff_layout($photos, $smallimage, $bigimage, $columns) {
 		case 'm':
 		default:
 			$style = 'width:200px; padding: 10px;';
-			$smallimage = 'm';
+			$options['smallimage'] = 'm';
 		break;
 	}
+
 	$i = 0;
+	$bigimage = $options['bigimage'];
 	foreach($photos as $photo) {
+	
+	list($width,$height) = getimagesize($photo[$options['smallimage']."_url"]);
+	
+	if( $width < $height ) {
+		$ratio_class = 'portrait';
+	} elseif( $height < $width ) {
+		$ratio_class = 'landscape';
+	} else {
+		$ratio_class = 'square';
+	}
+	
+	if( $options['type'] == 'random' ) {
+		$gallery_id = 'random';
+	} else {
+		$gallery_id = $options['set'];
+	}
 	
 	if($bigimage == 'o' && $photo['o_url'] != '') {
 		$bigpic = $photo['o_url'];
@@ -128,21 +161,21 @@ function ff_layout($photos, $smallimage, $bigimage, $columns) {
 		$bigpic = $photo['b_url'];
 	} else {
 		$bigpic = $photo['m_url'];
-	}
+	} 
 		
-		$pic .= '<div class="column rotated"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery]"><img style="' . $style . '" src="' . $photo["$smallimage"."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
+		$pic .= '<div class="column rotated ' . $ratio_class . ' ' . $options['smallimage'] . '_' . $ratio_class . '"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery-'.$gallery_id.']"><img style="' . $style . '" src="' . $photo[$options['smallimage']."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
 		
 		$i++;
-		if(is_int($i/$columns)) $pic .= "<br clear='left' />\r\n";
+		if(is_int($i/$options['columns'])) $pic .= "<br clear='left' />\r\n";
 		
 	}
 	return $pic;
 	
 }
 
-function def_set($key, $userid) {
-	$flickr = new flickr($key);
-	$us = $flickr->getUsersPhotosets($userid);
+function ff_def_set($info) {
+	$flickr = new flickr($info['api']);
+	$us = $flickr->getUsersPhotosets($info['id']);
 	$def_set = $us[1]['id'];
 	return $def_set;
 }
