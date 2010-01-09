@@ -46,16 +46,18 @@ if ( is_admin() ){
 function fancyflickr($atts = array()) {
 	global $post;
 	
+	// Setup the array for API info
 	$info = array (
 		'api'			=>	get_option('fancyflickr_api'),
 		'id'			=>	get_option('fancyflickr_id'),
 	);
 	
-	if(in_the_loop()) {
-		add_post_meta($post->ID, '_fancyflickr_recent', ff_def_set($info), true);
-		$defset = get_post_meta($post->ID, '_fancyflickr_recent', true);
-	} else {
-		$defset = ff_def_set($info);
+	
+	if(in_the_loop()) { // Check if we're in the loop
+		add_post_meta($post->ID, '_fancyflickr_recent', ff_def_set($info), true); // Add a custom field for the newest set
+		$defset = get_post_meta($post->ID, '_fancyflickr_recent', true); // Get the custom field for set
+	} else { // if we're not in the loop...
+		$defset = ff_def_set($info); // just get the newest set
 	}
 	
 	extract(shortcode_atts(array(
@@ -67,6 +69,7 @@ function fancyflickr($atts = array()) {
 		'columns'	=> intval(get_option('fancyflickr_columns')),
 	), $atts));
 	
+	// Setup the options array
 	$options = array (
 		'set'			=>	$set,
 		'num'			=>	$num,
@@ -75,7 +78,8 @@ function fancyflickr($atts = array()) {
 		'columns'		=>	$columns,
 		'type'			=>	$type
 	);
-		
+	
+	// Helps to center the gallery in the middle of the content
 	switch($smallimage) {
 		case 's':
 			$width = $columns * 78;
@@ -89,6 +93,7 @@ function fancyflickr($atts = array()) {
 		break;
 	}
 	
+	// What type of gallery do we want?
 	switch($type) {
 		case 'set':
 		$photos = ff_get_image_set($info, $options);
@@ -98,6 +103,7 @@ function fancyflickr($atts = array()) {
 		break;
 	}
 	
+	// Displays the gallery
 	return "<div style='max-width:" . $width . "px;' class='fancyflickr'>" . $photos . "<br clear='all' /></div>";
 }
 
@@ -117,8 +123,10 @@ function ff_get_random_images($info, $options) {
 	return $pic;
 }
 
+// Global FF layout
 function ff_layout($photos, $options) {
 	
+	// Setup basic thumbnail styling
 	switch($options['smallimage']) {
 		case 's':
 			$style = 'width:50px; padding: 4px;';
@@ -139,6 +147,7 @@ function ff_layout($photos, $options) {
 	
 	list($width,$height) = getimagesize($photo[$options['smallimage']."_url"]);
 	
+	// Setup $ratio_class to differentiate portrait, landscape, and square thumbnails
 	if( $width < $height ) {
 		$ratio_class = 'portrait';
 	} elseif( $height < $width ) {
@@ -147,12 +156,14 @@ function ff_layout($photos, $options) {
 		$ratio_class = 'square';
 	}
 	
+	// Make each gallery it's own in lightbox
 	if( $options['type'] == 'random' ) {
 		$gallery_id = 'random';
 	} else {
 		$gallery_id = $options['set'];
 	}
 	
+	// Make sure we get the largest image that they want
 	if($bigimage == 'o' && $photo['o_url'] != '') {
 		$bigpic = $photo['o_url'];
 	} elseif($bigimage == 'o' && $photo['o_url'] == '' && $photo['b_url'] != '') {
@@ -166,7 +177,7 @@ function ff_layout($photos, $options) {
 		$pic .= '<div class="column rotated ' . $ratio_class . ' ' . $options['smallimage'] . '_' . $ratio_class . '"><a class="polaroid" href="' . $bigpic . '" rel="prettyPhoto[gallery-'.$gallery_id.']"><img style="' . $style . '" src="' . $photo[$options['smallimage']."_url"] . '" alt="'. $photo['title'] . '" /></a></div>'."\r\n";
 		
 		$i++;
-		if(is_int($i/$options['columns'])) $pic .= "<br clear='left' />\r\n";
+		if(is_int($i/$options['columns'])) $pic .= "<br clear='left' />\r\n"; // Clear the float after every row
 		
 	}
 	return $pic;
