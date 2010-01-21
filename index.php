@@ -3,7 +3,7 @@
 Plugin Name: FancyFlickr
 Plugin URI: http://joshbetz.com/2009/11/fancyflickr/
 Description: 
-Version: 0.3.1
+Version: 0.3.2
 Author: Josh Betz
 Author URI: http://joshbetz.com
 */
@@ -68,6 +68,12 @@ function fancyflickr($atts = array()) {
 		'bigimage' => get_option('fancyflickr_bigimage'),
 		'columns'	=> intval(get_option('fancyflickr_columns')),
 	), $atts));
+	
+	//Set default options
+	if($num == '') $num = 20;
+	if($smallimage == '') $smallimage = 'm';
+	if($bigimage == '') $bigimage = 'o';
+	if($columns == '') $columns = 3;
 	
 	// Setup the options array
 	$options = array (
