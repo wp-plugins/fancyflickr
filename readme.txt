@@ -40,7 +40,7 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 == Changelog ==
 
 = 0.3.2 =
-*Add defaults for the new options so they don't break anything.
+* Add defaults for the new options so they don't break anything.
 
 = 0.3.1 =
 * Optimize exchange of options throughout the plugin
