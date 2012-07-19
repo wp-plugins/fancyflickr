@@ -1,9 +1,9 @@
 === FancyFlickr ===
 Contributors: betzster
 Tags: photos, flickr
-Requires at least: 2.8
-Tested up to: 2.9.1
-Stable tag: trunk
+Requires at least: 3.4
+Tested up to: 3.4.1
+Stable tag: 1.0
 
 Adds a nice looking gallery from flickr styled with a little CSS3 and jQuery, which degrades nicely in older browsers.
 
@@ -23,14 +23,6 @@ This plugin gets images from your flickr account and displays them in an array s
 
 FancyFlickr uses the `[fancyflickr]` shortcode to display the FancyFlickr gallery in any post. The full options are `[fancyflickr set="SETID" num="NUMBEROFPICS"]`. Neither of these are required. Without any of the options set it will get the newest gallery with all of the pictures.
 
-= When I created a new set, the pictures on my post changed. Why? =
-
-Right now, the plugin isn't smart enough to know which set is the newest at the time you wrote the post. I'm working on a way to solve this that will be available in the next version.
-
-= Is there a way to choose which pictures inside a set are displayed? =
-
-Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your set on flickr. I know. It's annoying. I'm working on better ways to do this.
-
 == Screenshots ==
 
 1. A FancyFlickr gallery
@@ -38,6 +30,13 @@ Right now the only way would be to set `num="NUMBEROFPHOTOS"` and rearrange your
 3. The FancyFlickr options page
 
 == Changelog ==
+
+= 1.0 =
+* Rewrite helper to use `wp_http_request` instead of curl
+* Use more reliable plugin URL incase it's installed in a non-standard place
+* Use WordPress's jQuery instead of Google's
+* Cache results in WP_Object_Cache
+* Upate prettyPhoto
 
 = 0.3.2 =
 * Add defaults for the new options so they don't break anything.

@@ -1,4 +1,5 @@
 jQuery(function($) {
+    $("a[rel^='prettyPhoto']").prettyPhoto({social_tools:false});
 
     $("a.polaroid").each(function() {
         $(this)
